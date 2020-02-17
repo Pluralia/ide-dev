@@ -1,0 +1,37 @@
+new Application(
+    new Abstraction(
+        new Variable("if"),
+        new Application(
+            new Application(
+                new Application(
+                    new Variable("if"),
+                    new Abstraction(
+                        new Variable("x"),
+                        new Abstraction(
+                            new Variable("y"),
+                            new Variable("x")
+                        )
+                    )
+                ),
+                new Variable("a")
+            ),
+            new Variable("b")
+        )
+    ),
+    new Abstraction(
+        new Variable("p"),
+        new Abstraction(
+            new Variable("x"),
+            new Abstraction(
+                new Variable("y"),
+                new Application(
+                    new Application(
+                        new Variable("p"),
+                        new Variable("x")
+                    ),
+                    new Variable("y")
+                )
+            )
+        )
+    )
+);
