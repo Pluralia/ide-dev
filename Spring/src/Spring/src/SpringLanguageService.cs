@@ -13,8 +13,9 @@ using JetBrains.ReSharper.TestFramework;
 using JetBrains.Text;
  using JetBrains.Util;
 using NUnit.Framework;
+ using Sample;
 
-namespace JetBrains.ReSharper.Plugins.Spring
+ namespace JetBrains.ReSharper.Plugins.Spring
 {
   [Language(typeof(SpringLanguage))]
   class SpringLanguageService : LanguageService
@@ -53,7 +54,7 @@ namespace JetBrains.ReSharper.Plugins.Spring
     {
       public ILexer CreateLexer(IBuffer buffer)
       {
-        return new CSharpLexer(buffer);
+        return new SpringLexer(buffer);
       }
     }
   }

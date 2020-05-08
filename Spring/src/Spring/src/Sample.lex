@@ -32,15 +32,28 @@ ALPHA=[A-Za-z]
 DIGIT=[0-9]
 NEWLINE=((\r\n)|\n)
 NONNEWLINE_WHITE_SPACE_CHAR=[\ \t\b\012]
-WHITE_SPACE_CHAR=[{NEWLINE}\ \t\b\012]
-STRING_TEXT="\""(.)*"\""
-STRING_TEXT2="\""(.)*"xx"
+WHITE_SPACE_CHAR=({NEWLINE}|{NONNEWLINE_WHITE_SPACE_CHAR})
+IDENT=({ALPHA}+{DIGIT}*)
+COMMENT=("--"[^\n]*\n)
 
-
-
-%% 
+%%
+<YYINITIAL> "::" { return currentTokenType = SpringTokenType.DOUBLE_COLON; }
+<YYINITIAL> ":" { return currentTokenType = SpringTokenType.COLON; }
 <YYINITIAL> "=" { return currentTokenType = SpringTokenType.EQ; }
-<YYINITIAL> {DIGIT}+ { return currentTokenType = SpringTokenType.NUMBER; }	
-<YYINITIAL> {STRING_TEXT} { return currentTokenType = SpringTokenType.STRING; }	
-<YYINITIAL> {STRING_TEXT2} { return currentTokenType = SpringTokenType.NUMBER; }	
+<YYINITIAL> "===" { return currentTokenType = SpringTokenType.UNIFICATION; }
+<YYINITIAL> "|||" { return currentTokenType = SpringTokenType.OR; }
+<YYINITIAL> "&&&" { return currentTokenType = SpringTokenType.AND; }
+
+<YYINITIAL> conde { return currentTokenType = SpringTokenType.CONDE; }
+<YYINITIAL> {IDENT}+ { return currentTokenType = SpringTokenType.IDENT; }
+
+<YYINITIAL> "(" { return currentTokenType = SpringTokenType.L_ROUND; }
+<YYINITIAL> ")" { return currentTokenType = SpringTokenType.R_ROUND; }
+<YYINITIAL> "{" { return currentTokenType = SpringTokenType.L_CURVY; }
+<YYINITIAL> "}" { return currentTokenType = SpringTokenType.R_CURVY; }
+<YYINITIAL> "<" { return currentTokenType = SpringTokenType.L_ANGLE; }
+<YYINITIAL> ">" { return currentTokenType = SpringTokenType.R_ANGLE; }
+
+<YYINITIAL> {WHITE_SPACE_CHAR}+ { return currentTokenType = SpringTokenType.WS; }
+<YYINITIAL> {COMMENT} { return currentTokenType = SpringTokenType.COMMENT; }
 <YYINITIAL> . { return currentTokenType = SpringTokenType.BAD_CHARACTER; }	
