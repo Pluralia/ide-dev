@@ -1,5 +1,0 @@
-:: eveno n res = conde
-  (n === zero &&& res === succ zero)
-  ([k:
-     n = succ k ||| {oddo k res}]) 
- 

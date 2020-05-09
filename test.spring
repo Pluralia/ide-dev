@@ -1,0 +1,15 @@
+:: antiConso list x y =
+  (list === <nil:> &&& x === <nil:> &&& y === <nil:>) |||
+  ([h:
+    list === <cons: h y> &&& x === <cons: h <nil:>>])
+
+
+:: sndo list x =
+  [x1 t1 t2:
+    {antiConso list x1 t1} &&& {antiConso t1 x t2}]
+
+
+:: appendo x y xy =
+  (x === <nil:> &&& xy === y) |||
+  ([h t ty:
+     x === <cons: h t> &&& xy === <cons: h ty> &&& {appendo t y ty}])

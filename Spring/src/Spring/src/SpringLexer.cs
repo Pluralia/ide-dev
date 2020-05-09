@@ -6,8 +6,7 @@ namespace JetBrains.ReSharper.Plugins.Spring
     public class SpringLexer : Sample.SampleLexerGenerated
     {
         public SpringLexer(IBuffer buffer) : base(buffer) { }
-
-        public SpringLexer(IBuffer buffer, int startOffset, int endOffset) : base(buffer, startOffset, endOffset) { }
+        
     }    
 }
 

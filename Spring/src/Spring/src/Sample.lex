@@ -44,7 +44,6 @@ COMMENT=("--"[^\n]*\n)
 <YYINITIAL> "|||" { return currentTokenType = SpringTokenType.OR; }
 <YYINITIAL> "&&&" { return currentTokenType = SpringTokenType.AND; }
 
-<YYINITIAL> conde { return currentTokenType = SpringTokenType.CONDE; }
 <YYINITIAL> {IDENT}+ { return currentTokenType = SpringTokenType.IDENT; }
 
 <YYINITIAL> "(" { return currentTokenType = SpringTokenType.L_ROUND; }
@@ -53,6 +52,8 @@ COMMENT=("--"[^\n]*\n)
 <YYINITIAL> "}" { return currentTokenType = SpringTokenType.R_CURVY; }
 <YYINITIAL> "<" { return currentTokenType = SpringTokenType.L_ANGLE; }
 <YYINITIAL> ">" { return currentTokenType = SpringTokenType.R_ANGLE; }
+<YYINITIAL> "[" { return currentTokenType = SpringTokenType.L_SQUARE; }
+<YYINITIAL> "]" { return currentTokenType = SpringTokenType.R_SQUARE; }
 
 <YYINITIAL> {WHITE_SPACE_CHAR}+ { return currentTokenType = SpringTokenType.WS; }
 <YYINITIAL> {COMMENT} { return currentTokenType = SpringTokenType.COMMENT; }
