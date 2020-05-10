@@ -12,6 +12,7 @@ using JetBrains.ReSharper.Psi;
 using JetBrains.ReSharper.Psi.ExtensionsAPI.Tree;
 using JetBrains.ReSharper.Psi.Files;
 using JetBrains.ReSharper.Psi.Parsing;
+using JetBrains.ReSharper.Psi.Resolve;
 using JetBrains.ReSharper.Psi.Tree;
 using JetBrains.ReSharper.Psi.TreeBuilder;
 using JetBrains.Text;
@@ -38,6 +39,9 @@ namespace JetBrains.ReSharper.Plugins.Spring
                 
                 builder.Done(fileMark, SpringFileNodeType.Instance, null);
                 var file = (IFile)builder.BuildTree();
+                
+                SpringContext.InitFileContext(file);
+                
                 return file;
             }
         }
@@ -45,7 +49,6 @@ namespace JetBrains.ReSharper.Plugins.Spring
         private bool ParseProgram(PsiBuilder builder)
         {
             SkipWS(builder);
-            var programMark = builder.Mark();
             while (!builder.Eof())
             {
                 if (!ParseDef(builder) && !builder.Eof())
@@ -55,7 +58,6 @@ namespace JetBrains.ReSharper.Plugins.Spring
                 }
                 SkipWS(builder);
             }
-            builder.Done(programMark, SpringCompositeNodeType.PROGRAM, null);
             return true;
         }
 
@@ -331,7 +333,7 @@ namespace JetBrains.ReSharper.Plugins.Spring
                 var mark = builder.Mark();
                 builder.AdvanceLexer();
                 SkipWS(builder);
-                ParseIdent(builder);
+                ParseCtorName(builder);
                 SkipDelim(builder, SpringTokenType.COLON);
                 if (ParseList(builder, ParseTerm, SpringTokenType.WS, SpringTokenType.R_ANGLE))
                 {
@@ -352,30 +354,40 @@ namespace JetBrains.ReSharper.Plugins.Spring
             builder.Done(termMark, SpringCompositeNodeType.TERM, null);
             return true;
         }
+
+        private static bool ParseCtorName(PsiBuilder builder)
+        {
+            return ParseName(builder, 
+                SpringCompositeNodeType.CTORNAME,
+                "Expected name of constructor!");
+        }
         
         private static bool ParseDecl(PsiBuilder builder)
         {
-            var declMark = builder.Mark();
-            if (builder.GetTokenType() == SpringTokenType.IDENT)
-            {
-                builder.AdvanceLexer();
-                builder.Done(declMark, SpringCompositeNodeType.DECL, null);
-                return true;
-            }
-            builder.Error(declMark, "Expected declaration!");
-            return false;
+            return ParseName(builder, 
+                SpringCompositeNodeType.DECL,
+                "Expected declaration!");
         }
         
         private static bool ParseIdent(PsiBuilder builder)
         {
-            var identMark = builder.Mark();
+            return ParseName(builder, 
+                SpringCompositeNodeType.IDENT,
+                "Expected identifier!");
+        }
+        
+        private static bool ParseName(PsiBuilder builder, 
+            SpringCompositeNodeType node,
+            string errorMsg)
+        {
+            var nameMark = builder.Mark();
             if (builder.GetTokenType() == SpringTokenType.IDENT)
             {
                 builder.AdvanceLexer();
-                builder.Done(identMark, SpringCompositeNodeType.IDENT, null);
+                builder.Done(nameMark, node, null);
                 return true;
             }
-            builder.Error(identMark, "Expected identifier!");
+            builder.Error(nameMark, errorMsg);
             return false;
         }
 
@@ -445,10 +457,13 @@ namespace JetBrains.ReSharper.Plugins.Spring
         internal class SpringDaemonProcess : IDaemonStageProcess
         {
             private readonly SpringFile myFile;
+            private readonly SpringReferenceFactory referenceFactory;
+
             public SpringDaemonProcess(IDaemonProcess process, SpringFile file)
             {
                 myFile = file;
                 DaemonProcess = process;
+                referenceFactory = new SpringReferenceFactory();
             }
 
             public void Execute(Action<DaemonStageResult> committer)
@@ -462,9 +477,15 @@ namespace JetBrains.ReSharper.Plugins.Spring
                         highlightings.Add(new HighlightingInfo(range, 
                             new CSharpSyntaxError(error.ErrorDescription, range)));
                     }
-                    // else if (treeNode)
-                    // {
-                    // }
+                    
+                    var references = referenceFactory.GetReferences(treeNode, ReferenceCollection.Empty);
+                    if (references.Any(it => 
+                        it.Resolve().Info.ResolveErrorType != ResolveErrorType.OK))
+                    {
+                        var range = references.First().GetDocumentRange();
+                        highlightings.Add(new HighlightingInfo(range,
+                            new CSharpSyntaxError("Unknown symbol!", range)));
+                    }
                 }
                 
                 var result = new DaemonStageResult(highlightings);

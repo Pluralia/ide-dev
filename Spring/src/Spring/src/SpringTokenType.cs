@@ -17,17 +17,16 @@ namespace JetBrains.ReSharper.Plugins.Spring
         public static SpringTokenType UNIFICATION  = new SpringTokenType("UNIFICATION", 3);
         public static SpringTokenType AND          = new SpringTokenType("AND", 4);
         public static SpringTokenType OR           = new SpringTokenType("OR", 5);
+        public static SpringTokenType IDENT        = new SpringTokenType("IDENT", 8);
         
-        public static SpringTokenType IDENT = new SpringTokenType("IDENT", 8);
-
-        public static SpringTokenType L_ROUND = new SpringTokenType("L_ROUND", 9);
-        public static SpringTokenType R_ROUND = new SpringTokenType("R_ROUND", 10);
-        public static SpringTokenType L_CURVY = new SpringTokenType("L_CURVY", 11);
-        public static SpringTokenType R_CURVY = new SpringTokenType("R_CURVY", 12);
-        public static SpringTokenType L_ANGLE = new SpringTokenType("L_ANGLE", 13);
-        public static SpringTokenType R_ANGLE = new SpringTokenType("R_ANGLE", 14);
-        public static SpringTokenType L_SQUARE = new SpringTokenType("L_SQUARE", 15);
-        public static SpringTokenType R_SQUARE = new SpringTokenType("R_SQUARE", 16);
+        public static SpringTokenType L_ROUND      = new SpringTokenType("L_ROUND", 9);
+        public static SpringTokenType R_ROUND      = new SpringTokenType("R_ROUND", 10);
+        public static SpringTokenType L_CURVY      = new SpringTokenType("L_CURVY", 11);
+        public static SpringTokenType R_CURVY      = new SpringTokenType("R_CURVY", 12);
+        public static SpringTokenType L_ANGLE      = new SpringTokenType("L_ANGLE", 13);
+        public static SpringTokenType R_ANGLE      = new SpringTokenType("R_ANGLE", 14);
+        public static SpringTokenType L_SQUARE     = new SpringTokenType("L_SQUARE", 15);
+        public static SpringTokenType R_SQUARE     = new SpringTokenType("R_SQUARE", 16);
 
         public static SpringTokenType WS            = new SpringTokenType("WS", 17);
         public static SpringTokenType COMMENT       = new SpringTokenType("COMMENT", 18);

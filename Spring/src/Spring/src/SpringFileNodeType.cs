@@ -24,6 +24,7 @@ namespace JetBrains.ReSharper.Plugins.Spring
 
         public static readonly SpringCompositeNodeType IDENT       = new SpringCompositeNodeType("IDENT", 0);
         public static readonly SpringCompositeNodeType DECL        = new SpringCompositeNodeType("DECL", 12);
+        public static readonly SpringCompositeNodeType CTORNAME    = new SpringCompositeNodeType("CTORNAME", 13);
         public static readonly SpringCompositeNodeType CTOR        = new SpringCompositeNodeType("CTOR", 1);
         public static readonly SpringCompositeNodeType TERM        = new SpringCompositeNodeType("TERM", 2);
         public static readonly SpringCompositeNodeType UNIFICATION = new SpringCompositeNodeType("UNIFICATION", 3);
@@ -34,7 +35,6 @@ namespace JetBrains.ReSharper.Plugins.Spring
         public static readonly SpringCompositeNodeType CONJ        = new SpringCompositeNodeType("CONJ", 8);
         public static readonly SpringCompositeNodeType GOAL        = new SpringCompositeNodeType("GOAL", 9);
         public static readonly SpringCompositeNodeType DEF         = new SpringCompositeNodeType("DEF", 10);
-        public static readonly SpringCompositeNodeType PROGRAM     = new SpringCompositeNodeType("PROGRAM", 11);
 
         public override CompositeElement Create()
         {
@@ -42,6 +42,8 @@ namespace JetBrains.ReSharper.Plugins.Spring
                 return new SpringIdent();
             if (this == DECL)
                 return new SpringDecl();
+            if (this == CTORNAME)
+                return new SpringCtorName();
             if (this == CTOR)
                 return new SpringCtor();
             if (this == TERM)
@@ -62,8 +64,6 @@ namespace JetBrains.ReSharper.Plugins.Spring
                 return new SpringConj();
             if (this == GOAL)
                 return new SpringGoal();
-            if (this == PROGRAM)
-                return new SpringProgram();
             throw new InvalidOperationException();
         }
     }

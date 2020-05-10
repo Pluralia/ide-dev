@@ -12,4 +12,4 @@
 :: appendo x y xy =
   (x === <nil:> &&& xy === y) |||
   ([h t ty:
-     x === <cons: h t> &&& xy === <cons: h ty> &&& {appendo t y ty}])
+     x === <cons: h t> &&& (ef === list ||| h === <wef : t>) &&& xy === <cons: h ty> &&& {appendo t y ty}])
