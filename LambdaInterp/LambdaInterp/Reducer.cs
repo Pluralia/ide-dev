@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace LambdaInterp
 {
@@ -70,7 +69,7 @@ namespace LambdaInterp
             {
                 return 0;
             }
-
+            
             return Convert.ToInt32(v[0]) - 97 + 26 * VarToNum(v.Substring(1));
         }
 
@@ -101,7 +100,7 @@ namespace LambdaInterp
         {
             if (term is Variable variable)
             {
-                return variable.Name == cur ? new Variable(next) : term;
+                return variable.Name.Equals(cur) ? new Variable(next) : term;
             }
 
             if (term is Application application)
@@ -113,7 +112,7 @@ namespace LambdaInterp
             if (term is Abstraction abstraction)
             {
                 var x = abstraction.Variable;
-                if (x.Name == cur)
+                if (x.Name.Equals(cur))
                     return new Abstraction(new Variable(next), Go(cur, next, abstraction.Body));
                 return new Abstraction(x, Go(cur, next, abstraction.Body));
             }
@@ -126,23 +125,23 @@ namespace LambdaInterp
         {
             if (term is Variable variable)
             {
-                return x == variable.Name ? s : term;
+                return variable.Name.Equals(x) ? s : term;
             }
             
             if (term is Application application)
             {
-                return new Application(Subst(x, s, application.Function), Subst(x, s, application.Argument));
+                return new Application(Subst(x, s, application.Function), 
+                    Subst(x, s, application.Argument));
             }
 
             if (term is Abstraction abstraction)
             {
                 var y = abstraction.Variable;
                 
-                if (x == y.Name)
+                if (y.Name.Equals(x))
                     return term;
-
-                var freeVars = FreeVars(s);
-                if (!freeVars.Contains(y.Name))
+                
+                if (!FreeVars(s).Contains(y.Name))
                 {
                     return new Abstraction(y, Subst(x, s, abstraction.Body));
                 }
@@ -152,6 +151,7 @@ namespace LambdaInterp
             Console.WriteLine("SUBST: impossible case!");
             return null;
         }
+        
         public IExpression Visit(Application application)
         {
             if (application.Function is Abstraction abstraction)
@@ -169,8 +169,8 @@ namespace LambdaInterp
             if (!reducedArgument.Equals(application.Argument))
             {
                 return new Application(application.Function, reducedArgument);
-                
             }
+            
             Console.WriteLine("REDUCE APPLICATION: all parts are null!");
             return application;
         }
@@ -183,9 +183,11 @@ namespace LambdaInterp
             {
                 return new Abstraction(abstraction.Variable, reducedBody);
             }
+            
             Console.WriteLine("REDUCE ABSTRACTION: body is null!");
             return abstraction;
         }
+        
         public IExpression Visit(Variable expression)
         {
             return expression;
