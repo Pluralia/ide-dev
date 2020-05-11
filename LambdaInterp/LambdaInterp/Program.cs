@@ -80,6 +80,52 @@ namespace LambdaInterp
       return Name.GetHashCode();
     }
   }
+  // class Presenter : IVisitor<StringBuilder>
+  // {
+  //   private readonly StringBuilder myBuilder;
+  //   public Presenter(StringBuilder builder)
+  //   {
+  //     myBuilder = builder;
+  //   }
+  //   public StringBuilder Visit(Application expression)
+  //   {
+  //     if (expression.Function is Abstraction abstraction)
+  //     {
+  //       myBuilder.Append("let ");
+  //       abstraction.Variable.Accept(this);
+  //       myBuilder.Append(" = ");
+  //       expression.Argument.Accept(this);
+  //       myBuilder.Append(" in ");
+  //       
+  //       if (abstraction.Body is Application application && application.Function is Abstraction)
+  //         myBuilder.AppendLine();
+  //       return abstraction.Body.Accept(this);
+  //     }
+  //     else
+  //     {
+  //       expression.Function.Accept(this);
+  //       myBuilder.Append("(");
+  //       expression.Argument.Accept(this);
+  //       return myBuilder.Append(")");
+  //     }
+  //   }
+  //   public StringBuilder Visit(Abstraction expression)
+  //   {
+  //     myBuilder.Append("\\");
+  //     expression.Variable.Accept(this);
+  //     myBuilder.Append(" => ");
+  //     return expression.Body.Accept(this);
+  //   }
+  //   public StringBuilder Visit(Variable expression)
+  //   {
+  //     return myBuilder.Append(expression.Name);
+  //   }
+  //   public static string ToString(IExpression expression)
+  //   {
+  //    return expression.Accept(new Presenter(new StringBuilder())).ToString();
+  //   }
+  // }
+  
   class Presenter : IVisitor<StringBuilder>
   {
     private readonly StringBuilder myBuilder;
@@ -89,32 +135,20 @@ namespace LambdaInterp
     }
     public StringBuilder Visit(Application expression)
     {
-      if (expression.Function is Abstraction abstraction)
-      {
-        myBuilder.Append("let ");
-        abstraction.Variable.Accept(this);
-        myBuilder.Append(" = ");
-        expression.Argument.Accept(this);
-        myBuilder.Append(" in ");
-        
-        if (abstraction.Body is Application application && application.Function is Abstraction)
-          myBuilder.AppendLine();
-        return abstraction.Body.Accept(this);
-      }
-      else
-      {
-        expression.Function.Accept(this);
-        myBuilder.Append("(");
-        expression.Argument.Accept(this);
-        return myBuilder.Append(")");
-      }
+      myBuilder.Append("(");
+      myBuilder.Append(expression.Function);
+      myBuilder.Append(" @ ");
+      myBuilder.Append(expression.Argument);
+      return myBuilder.Append(")");
     }
     public StringBuilder Visit(Abstraction expression)
     {
-      myBuilder.Append("\\");
-      expression.Variable.Accept(this);
-      myBuilder.Append(" => ");
-      return expression.Body.Accept(this);
+      myBuilder.Append("[\\");
+      myBuilder.Append(expression.Variable);
+      myBuilder.Append(" ");
+      myBuilder.Append(expression.Body);
+      myBuilder.Append("]");
+      return myBuilder;
     }
     public StringBuilder Visit(Variable expression)
     {
@@ -174,14 +208,24 @@ namespace LambdaInterp
       Console.WriteLine(Presenter.ToString(expr));
       
       expr = expr.Accept(new Reducer());
-      // Console.WriteLine(Presenter.ToString(expr));
+      Console.WriteLine(Presenter.ToString(expr));
+
+      expr = expr.Accept(new Reducer());
+      Console.WriteLine(Presenter.ToString(expr));
+      
+      expr = expr.Accept(new Reducer());
+      Console.WriteLine(Presenter.ToString(expr));
+      
+      expr = expr.Accept(new Reducer());
+      Console.WriteLine(Presenter.ToString(expr));
+      
+      expr = expr.Accept(new Reducer());
+      Console.WriteLine(Presenter.ToString(expr));
       
       ////////////////////////////
       Console.WriteLine("HURRAY");
       // new Reducer().printSmth();
       //////////////////////////
-
-      // Console.ReadLine();
     }
   }
 }

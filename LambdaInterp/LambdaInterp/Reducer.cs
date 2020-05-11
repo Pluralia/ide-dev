@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace LambdaInterp
 {
@@ -27,42 +28,48 @@ namespace LambdaInterp
             return freeVars;
         }
 
-        private IExpression Subst(string x, IExpression s, IExpression t)
-        {
-            if (t is Variable variable)
-            {
-                if (x == variable.Name)
-                {
-                    return s;
-                }
+        // private IExpression Rename(string cur, IExpression term)
+        // {
+        //     
+        // }
+        //
+        // private string Next(string cur, IExpression term)
+        // {
+        //     if (FreeVars(term).Contains(cur))
+        //         return cur;
+        //     
+        // }
 
-                return t;
+        private IExpression Subst(string x, IExpression s, IExpression term)
+        {
+            if (term is Variable variable)
+            {
+                return x == variable.Name ? s : term;
             }
             
-            if (t is Application application)
+            if (term is Application application)
             {
                 return new Application(Subst(x, s, application.Function), Subst(x, s, application.Argument));
             }
 
-            if (t is Abstraction abstraction)
+            if (term is Abstraction abstraction)
             {
-                string y = abstraction.Variable.Name;
+                var y = abstraction.Variable;
                 
-                if (x == y)
-                {
-                    return t;
-                }
+                if (x == y.Name)
+                    return term;
 
-                HashSet<string> freeVars = FreeVars(s);
-                if (freeVars.Contains(y))
+                var freeVars = FreeVars(s);
+                if (!freeVars.Contains(y.Name))
                 {
-                    Console.WriteLine("RENAME");
-                    return null;
+                    return new Abstraction(y, Subst(x, s, abstraction.Body));
                 }
-                return new Abstraction(abstraction.Variable, Subst(x, s, abstraction.Body));
+                Console.WriteLine("SUBST: RENAME");
+                return null;
+                // return Subst(x, s, Rename(y, term));
             }
 
-            Console.WriteLine("SUBST: impossible case!!");
+            Console.WriteLine("SUBST: impossible case!");
             return null;
         }
         public IExpression Visit(Application application)
@@ -73,31 +80,35 @@ namespace LambdaInterp
             }
             
             IExpression reducedFunction = application.Function.Accept(this);
-            IExpression reducedArg = application.Argument.Accept(this);
-
-            if (reducedFunction is null)
+            if (!(reducedFunction is null))
             {
-                if (reducedArg is null)
-                {
-                    return null;
-                }
-                return new Application(application.Function, reducedArg);
+                return new Application(reducedFunction, application.Argument);
             }
-            return new Application(reducedFunction, reducedArg);
+            
+            IExpression reducedArgument = application.Argument.Accept(this);
+            if (!(reducedArgument is null))
+            {
+                return new Application(application.Function, reducedArgument);
+                
+            }
+            Console.WriteLine("REDUCE APPLICATION: all parts are null!");
+            return null;
         }
+        
         public IExpression Visit(Abstraction abstraction)
         {
             IExpression reducedBody = abstraction.Body.Accept(this);
 
             if (reducedBody is null)
             {
+                Console.WriteLine("REDUCE ABSTRACTION: body is null!");
                 return null;
             }
             return new Abstraction(abstraction.Variable, reducedBody);
         }
         public IExpression Visit(Variable expression)
         {
-            return null;
+            return expression;
         }
     }
 }
