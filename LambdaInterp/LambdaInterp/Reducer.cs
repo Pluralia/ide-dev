@@ -59,9 +59,9 @@ namespace LambdaInterp
             }
 
             if (n < 26)
-                return Convert.ToChar(n).ToString();
+                return Convert.ToChar(n + 97).ToString();
 
-            return Convert.ToChar(n % 26) + NumToVar(n / 26);
+            return Convert.ToChar(n % 26 + 97) + NumToVar(n / 26);
         }
         
         private int VarToNum(string v)
@@ -91,7 +91,10 @@ namespace LambdaInterp
                 if (max < num)
                     max = num;
             }
-            return NumToVar(max + 1);
+
+            var res = NumToVar(max + 1);
+            Console.WriteLine("RENAME-NEXT: " + cur + " -> " + res);
+            return res;
         }
 
         private IExpression Go(string cur, string next, IExpression term)
