@@ -159,72 +159,37 @@ namespace LambdaInterp
      return expression.Accept(new Presenter(new StringBuilder())).ToString();
     }
   }
-
   class Program
   {
+
+    static void Test(IExpression expr)
+    {
+      Console.WriteLine(Presenter.ToString(expr));
+
+      var prevExpr = expr;
+      do
+      {
+        prevExpr = expr;
+        expr = expr.Accept(new Reducer());
+        Console.WriteLine("\n" + Presenter.ToString(expr));
+      } while (!prevExpr.Equals(expr));
+      
+      Console.WriteLine("\n============================================\n");
+    }
+    
     static void Main(string[] args)
     {
-      // IExpression expr = new Application(new Abstraction(new Variable("zero"), new Application(new Abstraction(new Variable("one"), new Application(new Abstraction(new Variable("two"), new Application(new Abstraction(new Variable("succ"), new Application(new Abstraction(new Variable("plus"), new Application(new Abstraction(new Variable("mult"), new Application(new Abstraction(new Variable("pred"), new Application(new Abstraction(new Variable("true"), new Application(new Abstraction(new Variable("false"), new Application(new Abstraction(new Variable("if"), new Application(new Abstraction(new Variable("izzero"), new Application(new Abstraction(new Variable("fix"), new Application(new Abstraction(new Variable("factorial"), new Application(new Variable("factorial"), new Application(new Application(new Variable("plus"), new Application(new Application(new Variable("mult"), new Variable("two")), new Variable("two"))), new Variable("two")))), new Application(new Variable("fix"), new Abstraction(new Variable("f"), new Abstraction(new Variable("n"), new Application(new Application(new Application(new Variable("if"), new Application(new Variable("izzero"), new Variable("n"))), new Variable("one")), new Application(new Application(new Variable("mult"), new Variable("n")), new Application(new Variable("f"), new Application(new Variable("pred"), new Variable("n")))))))))), new Abstraction(new Variable("g"), new Application(new Abstraction(new Variable("x"), new Application(new Variable("g"), new Application(new Variable("x"), new Variable("x")))), new Abstraction(new Variable("x"), new Application(new Variable("g"), new Application(new Variable("x"), new Variable("x")))))))), new Abstraction(new Variable("n"), new Application(new Application(new Variable("n"), new Abstraction(new Variable("x"), new Variable("false"))), new Variable("true"))))), new Abstraction(new Variable("p"), new Abstraction(new Variable("x"), new Abstraction(new Variable("y"), new Application(new Application(new Variable("p"), new Variable("x")), new Variable("y"))))))), new Abstraction(new Variable("x"), new Abstraction(new Variable("y"), new Variable("y"))))), new Abstraction(new Variable("x"), new Abstraction(new Variable("y"), new Variable("x"))))), new Abstraction(new Variable("n"), new Abstraction(new Variable("f"), new Abstraction(new Variable("x"), new Application(new Application(new Application(new Variable("n"), new Abstraction(new Variable("g"), new Abstraction(new Variable("h"), new Application(new Variable("h"), new Application(new Variable("g"), new Variable("f")))))), new Abstraction(new Variable("u"), new Variable("x"))), new Abstraction(new Variable("u"), new Variable("u")))))))), new Abstraction(new Variable("m"), new Abstraction(new Variable("n"), new Application(new Application(new Variable("m"), new Application(new Variable("plus"), new Variable("n"))), new Variable("zero")))))), new Abstraction(new Variable("m"), new Abstraction(new Variable("n"), new Abstraction(new Variable("f"), new Abstraction(new Variable("x"), new Application(new Application(new Variable("n"), new Variable("f")), new Application(new Application(new Variable("m"), new Variable("f")), new Variable("x"))))))))), new Abstraction(new Variable("n"), new Abstraction(new Variable("f"), new Abstraction(new Variable("x"), new Application(new Variable("f"), new Application(new Application(new Variable("n"), new Variable("f")), new Variable("x")))))))), new Abstraction(new Variable("f"), new Abstraction(new Variable("x"), new Application(new Variable("f"), new Application(new Variable("f"), new Variable("x"))))))), new Abstraction(new Variable("f"), new Abstraction(new Variable("x"), new Application(new Variable("f"), new Variable("x")))))), new Abstraction(new Variable("f"), new Abstraction(new Variable("x"), new Variable("x"))));
-      IExpression expr = new Application(
-        new Abstraction(
-          new Variable("if"),
-          new Application(
-            new Application(
-              new Application(
-                new Variable("if"),
-                new Abstraction(
-                  new Variable("x"),
-                  new Abstraction(
-                    new Variable("y"),
-                    new Variable("x")
-                  )
-                )
-              ),
-              new Variable("a")
-            ),
-            new Variable("b")
-          )
-        ),
-        new Abstraction(
-          new Variable("p"),
-          new Abstraction(
-            new Variable("x"),
-            new Abstraction(
-              new Variable("y"),
-              new Application(
-                new Application(
-                  new Variable("p"),
-                  new Variable("x")
-                ),
-                new Variable("y")
-              )
-            )
-          )
-        )
-      );
-      Console.WriteLine(Presenter.ToString(expr));
+//      IExpression expr = new Application(new Abstraction(new Variable("zero"), new Application(new Abstraction(new Variable("one"), new Application(new Abstraction(new Variable("two"), new Application(new Abstraction(new Variable("succ"), new Application(new Abstraction(new Variable("plus"), new Application(new Abstraction(new Variable("mult"), new Application(new Abstraction(new Variable("pred"), new Application(new Abstraction(new Variable("true"), new Application(new Abstraction(new Variable("false"), new Application(new Abstraction(new Variable("if"), new Application(new Abstraction(new Variable("izzero"), new Application(new Abstraction(new Variable("fix"), new Application(new Abstraction(new Variable("factorial"), new Application(new Variable("factorial"), new Application(new Application(new Variable("plus"), new Application(new Application(new Variable("mult"), new Variable("two")), new Variable("two"))), new Variable("two")))), new Application(new Variable("fix"), new Abstraction(new Variable("f"), new Abstraction(new Variable("n"), new Application(new Application(new Application(new Variable("if"), new Application(new Variable("izzero"), new Variable("n"))), new Variable("one")), new Application(new Application(new Variable("mult"), new Variable("n")), new Application(new Variable("f"), new Application(new Variable("pred"), new Variable("n")))))))))), new Abstraction(new Variable("g"), new Application(new Abstraction(new Variable("x"), new Application(new Variable("g"), new Application(new Variable("x"), new Variable("x")))), new Abstraction(new Variable("x"), new Application(new Variable("g"), new Application(new Variable("x"), new Variable("x")))))))), new Abstraction(new Variable("n"), new Application(new Application(new Variable("n"), new Abstraction(new Variable("x"), new Variable("false"))), new Variable("true"))))), new Abstraction(new Variable("p"), new Abstraction(new Variable("x"), new Abstraction(new Variable("y"), new Application(new Application(new Variable("p"), new Variable("x")), new Variable("y"))))))), new Abstraction(new Variable("x"), new Abstraction(new Variable("y"), new Variable("y"))))), new Abstraction(new Variable("x"), new Abstraction(new Variable("y"), new Variable("x"))))), new Abstraction(new Variable("n"), new Abstraction(new Variable("f"), new Abstraction(new Variable("x"), new Application(new Application(new Application(new Variable("n"), new Abstraction(new Variable("g"), new Abstraction(new Variable("h"), new Application(new Variable("h"), new Application(new Variable("g"), new Variable("f")))))), new Abstraction(new Variable("u"), new Variable("x"))), new Abstraction(new Variable("u"), new Variable("u")))))))), new Abstraction(new Variable("m"), new Abstraction(new Variable("n"), new Application(new Application(new Variable("m"), new Application(new Variable("plus"), new Variable("n"))), new Variable("zero")))))), new Abstraction(new Variable("m"), new Abstraction(new Variable("n"), new Abstraction(new Variable("f"), new Abstraction(new Variable("x"), new Application(new Application(new Variable("n"), new Variable("f")), new Application(new Application(new Variable("m"), new Variable("f")), new Variable("x"))))))))), new Abstraction(new Variable("n"), new Abstraction(new Variable("f"), new Abstraction(new Variable("x"), new Application(new Variable("f"), new Application(new Application(new Variable("n"), new Variable("f")), new Variable("x")))))))), new Abstraction(new Variable("f"), new Abstraction(new Variable("x"), new Application(new Variable("f"), new Application(new Variable("f"), new Variable("x"))))))), new Abstraction(new Variable("f"), new Abstraction(new Variable("x"), new Application(new Variable("f"), new Variable("x")))))), new Abstraction(new Variable("f"), new Abstraction(new Variable("x"), new Variable("x"))));
 
-      expr = expr.Accept(new Reducer());
-      Console.WriteLine(Presenter.ToString(expr));
-      
-      expr = expr.Accept(new Reducer());
-      Console.WriteLine(Presenter.ToString(expr));
+      IExpression simpleTest = new Application(new Abstraction(new Variable("if"), new Application(new Application(new Application(new Variable("if"),new Abstraction(new Variable("x"),new Abstraction(new Variable("y"),new Variable("x")))),new Variable("a")),new Variable("b"))),new Abstraction(new Variable("p"),new Abstraction(new Variable("x"),new Abstraction(new Variable("y"),new Application(new Application(new Variable("p"),new Variable("x")),new Variable("y"))))));
 
-      expr = expr.Accept(new Reducer());
-      Console.WriteLine(Presenter.ToString(expr));
+      IExpression renamerTest = new Application(new Application(new Abstraction(new Variable("x"), new Abstraction(new Variable("y"), new Application(new Variable("y"), new Variable("x")))), new Variable("y")), new Variable("x"));
       
-      expr = expr.Accept(new Reducer());
-      Console.WriteLine(Presenter.ToString(expr));
-      
-      expr = expr.Accept(new Reducer());
-      Console.WriteLine(Presenter.ToString(expr));
-      
-      expr = expr.Accept(new Reducer());
-      Console.WriteLine(Presenter.ToString(expr));
-      
+      Test(simpleTest);
+      Test(renamerTest);
+
       ////////////////////////////
       Console.WriteLine("HURRAY");
-      // new Reducer().printSmth();
       //////////////////////////
     }
   }

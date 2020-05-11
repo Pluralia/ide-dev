@@ -27,18 +27,97 @@ namespace LambdaInterp
 
             return freeVars;
         }
+        
+        private HashSet<string> Vars(IExpression expression)
+        {
+            HashSet<string> vars = new HashSet<string>();
+            
+            if (expression is Variable variable)
+            {
+                vars.Add(variable.Name);
+            }
+            else if (expression is Application application)
+            {
+                vars = Vars(application.Function);
+                vars.UnionWith(Vars(application.Argument));
+            }
+            else if (expression is Abstraction abstraction)
+            {
+                vars = FreeVars(abstraction.Body);
+                vars.Add(abstraction.Variable.Name);
+            }
 
-        // private IExpression Rename(string cur, IExpression term)
-        // {
-        //     
-        // }
-        //
-        // private string Next(string cur, IExpression term)
-        // {
-        //     if (FreeVars(term).Contains(cur))
-        //         return cur;
-        //     
-        // }
+            return vars;
+        }
+
+        private string NumToVar(int n)
+        {
+            if (n < 0)
+            {
+                Console.WriteLine("NumToVar: number is less then 0!");
+                return null;
+            }
+
+            if (n < 26)
+                return Convert.ToChar(n).ToString();
+
+            return Convert.ToChar(n % 26) + NumToVar(n / 26);
+        }
+        
+        private int VarToNum(string v)
+        {
+            if (v.Equals(""))
+            {
+                return 0;
+            }
+
+            return Convert.ToInt32(v[0]) - 97 + 26 * VarToNum(v.Substring(1));
+        }
+
+        private IExpression Rename(string cur, IExpression term)
+        {
+            return Go(cur, Next(cur, term), term);
+        }
+        
+        private string Next(string cur, IExpression term)
+        {
+            if (FreeVars(term).Contains(cur))
+                return cur;
+            
+            var max = 0;
+            foreach (var var in Vars(term))
+            {
+                var num = VarToNum(var);
+                if (max < num)
+                    max = num;
+            }
+            return NumToVar(max + 1);
+        }
+
+        private IExpression Go(string cur, string next, IExpression term)
+        {
+            if (term is Variable variable)
+            {
+                return variable.Name == cur ? new Variable(next) : term;
+            }
+
+            if (term is Application application)
+            {
+                return new Application(Go(cur, next, application.Function), 
+                    Go(cur, next, application.Argument));
+            }
+
+            if (term is Abstraction abstraction)
+            {
+                var x = abstraction.Variable;
+                if (x.Name == cur)
+                    return new Abstraction(new Variable(next), Go(cur, next, abstraction.Body));
+                return new Abstraction(x, Go(cur, next, abstraction.Body));
+            }
+            
+            Console.WriteLine("RENAME-GO: impossible case!");
+            return null;
+        }
 
         private IExpression Subst(string x, IExpression s, IExpression term)
         {
@@ -64,9 +143,7 @@ namespace LambdaInterp
                 {
                     return new Abstraction(y, Subst(x, s, abstraction.Body));
                 }
-                Console.WriteLine("SUBST: RENAME");
-                return null;
-                // return Subst(x, s, Rename(y, term));
+                return Subst(x, s, Rename(y.Name, term));
             }
 
             Console.WriteLine("SUBST: impossible case!");
@@ -80,31 +157,31 @@ namespace LambdaInterp
             }
             
             IExpression reducedFunction = application.Function.Accept(this);
-            if (!(reducedFunction is null))
+            if (!reducedFunction.Equals(application.Function))
             {
                 return new Application(reducedFunction, application.Argument);
             }
             
             IExpression reducedArgument = application.Argument.Accept(this);
-            if (!(reducedArgument is null))
+            if (!reducedArgument.Equals(application.Argument))
             {
                 return new Application(application.Function, reducedArgument);
                 
             }
             Console.WriteLine("REDUCE APPLICATION: all parts are null!");
-            return null;
+            return application;
         }
         
         public IExpression Visit(Abstraction abstraction)
         {
             IExpression reducedBody = abstraction.Body.Accept(this);
 
-            if (reducedBody is null)
+            if (!reducedBody.Equals(abstraction.Body))
             {
-                Console.WriteLine("REDUCE ABSTRACTION: body is null!");
-                return null;
+                return new Abstraction(abstraction.Variable, reducedBody);
             }
-            return new Abstraction(abstraction.Variable, reducedBody);
+            Console.WriteLine("REDUCE ABSTRACTION: body is null!");
+            return abstraction;
         }
         public IExpression Visit(Variable expression)
         {
